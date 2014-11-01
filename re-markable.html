@@ -129,7 +129,7 @@ or alternatively:
       },
       getInnerIndent: function(text) {
         return text.split('\n').map(function (l) {
-          if (l === "") { return -1; }
+            if (l === "" || l.replace(/ /g, '').length === 0) { return -1; }
             return l.match(/^ +/)[0].length
           }).filter(function (l) {
             return l !== -1;
