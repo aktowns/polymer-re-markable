@@ -1,0 +1,32 @@
+{
+  "name": "re-markable",
+  "version": "0.1.0",
+  "authors": [
+    "Ashley Towns <ashleyis@me.com>"
+  ],
+  "description": "A polymer element for rendering markdown using remarkable",
+  "main": [
+    "re-markable.html"
+  ],
+  "keywords": [
+    "markdown",
+    "polymer",
+    "web-components",
+    "custom-elements",
+    "polymer-elements"
+  ],
+  "license": "MIT",
+  "homepage": "http://ashleytowns.id.au",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.4.2",
+    "remarkable": "~1.3.0",
+    "highlightjs": "~8.3.0"
+  }
+}

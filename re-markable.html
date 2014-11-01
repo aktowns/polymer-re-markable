@@ -1,0 +1,75 @@
+<link rel="import" href="../polymer/polymer.html">
+<script src="../remarkable/dist/remarkable.min.js"></script>
+<script src="../highlightjs/highlight.pack.js"></script>
+
+<polymer-element name="re-markable" attributes="text">
+  <template>
+    <div id="remarkable"></div>
+  </template>
+  <script>
+    Polymer("re-markable", {
+      html:         false,        // Enable HTML tags in source
+      xhtmlOut:     false,        // Use '/' to close single tags (<br />)
+      breaks:       false,        // Convert '\n' in paragraphs into <br>
+      langPrefix:   'language-',  // CSS language prefix for fenced blocks
+      linkify:      false,        // Autoconvert URL-like text to links
+      typographer:  false,        // Enable smartypants and other sweet transforms
+      defaultTheme: 'default',    // Default theme for highlightjs
+      /**
+       * The `text` attribute can be set to a string of Markdown
+       * that you would like to see rendered
+       *
+       * @attribute text
+       * @type string
+       */
+      /**
+       * The `re-markable-ready` event is fired after the marked-up HTML is
+       * inserted into the parent container.
+       *
+       * @event re-markable-ready
+       */
+      ready: function() {
+        this.text = this.text || this.textContent;
+      },
+      attached: function() {
+        this.addExternalCss();
+      },
+      textChanged: function() {
+        var md = new Remarkable({
+          html: this.html, xhtmlOut: this.xhtmlOut, breaks: this.breaks,
+          langPrefix: this.langPrefix, linkify: this.linkify, typographer: this.typographer,
+          highlight: this.highlight
+        });
+
+        if (this.text === null) {
+          this.$.remarkable.innerHTML = '';
+        } else {
+          this.$.remarkable.innerHTML = md.render(this.text);
+        }
+        this.fire('re-markable-ready');
+      },
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(lang, str).value;
+          } catch (err) {}
+        }
+
+        try {
+          return hljs.highlightAuto(str).value;
+        } catch (err) {}
+
+        return ''; // use external default escaping
+      },
+      addExternalCss: function() {
+        var link = document.createElement('link');
+        link.type = 'text/css';
+        link.rel = 'stylesheet';
+        link.href = '../highlightjs/styles/'+this.defaultTheme+'.css';
+        this.shadowRoot.appendChild(link);
+
+        this.element.convertSheetsToStyles(this.shadowRoot);
+      }
+    });
+  </script>
+</polymer-element>
