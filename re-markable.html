@@ -2,19 +2,27 @@
 <script src="../remarkable/dist/remarkable.min.js"></script>
 <script src="../highlightjs/highlight.pack.js"></script>
 
+<!--
+Web Component wrapper for Markdown using Polymer. Uses remarkable and highlightjs
+##### Example
+
+    <re-markable>
+      Hello, **world!**
+    </re-markable>
+or alternatively:
+
+    <re-markable text="Hello, **world!**"></re-markable>
+@element re-markable
+@blurb Web Component wrapper for Markdown using Polymer. Uses remarkable and highlightjs
+@status alpha
+@homepage http://aktowns.github.io/re-markable
+-->
 <polymer-element name="re-markable" attributes="text">
   <template>
     <div id="remarkable"></div>
   </template>
   <script>
     Polymer("re-markable", {
-      html:         false,        // Enable HTML tags in source
-      xhtmlOut:     false,        // Use '/' to close single tags (<br />)
-      breaks:       false,        // Convert '\n' in paragraphs into <br>
-      langPrefix:   'language-',  // CSS language prefix for fenced blocks
-      linkify:      false,        // Autoconvert URL-like text to links
-      typographer:  false,        // Enable smartypants and other sweet transforms
-      defaultTheme: 'default',    // Default theme for highlightjs
       /**
        * The `text` attribute can be set to a string of Markdown
        * that you would like to see rendered
@@ -23,13 +31,62 @@
        * @type string
        */
       /**
+       * Enable HTML tags in source.
+       *
+       * @attribute html
+       * @type boolean
+       */
+      html: false,
+      /**
+       * Use '/' to close single tags (&lt;br />)
+       *
+       * @attribute xhtmlOut
+       * @type boolean
+       */
+      xhtmlOut: false,
+      /**
+       * Convert '\n' in paragraphs into &lt;br>
+       *
+       * @attribute breaks
+       * @type boolean
+       */
+      breaks: false,
+      /**
+       * CSS language prefix for fenced blocks
+       *
+       * @attribute langPrefix
+       * @type string
+       */
+      langPrefix: 'language-',
+      /**
+       * Autoconvert URL-like text to links
+       *
+       * @attribute linkify
+       * @type boolean
+       */
+      linkify: false,
+      /**
+       * Enable smartypants and other sweet transforms
+       *
+       * @attribute typographer
+       * @type boolean
+       */
+      typographer:  false,
+      /**
+       * Set the default theme for highlightjs
+       *
+       * @attribute defaultTheme
+       * @type string
+       */
+      defaultTheme: 'default',
+      /**
        * The `re-markable-ready` event is fired after the marked-up HTML is
        * inserted into the parent container.
        *
        * @event re-markable-ready
        */
       ready: function() {
-        this.text = this.text || this.textContent;
+        this.text = this.text || this.trimChar(this.textContent, this.getInnerIndent(this.textContent));
       },
       attached: function() {
         this.addExternalCss();
@@ -69,6 +126,22 @@
         this.shadowRoot.appendChild(link);
 
         this.element.convertSheetsToStyles(this.shadowRoot);
+      },
+      getInnerIndent: function(text) {
+        return text.split('\n').map(function (l) {
+          if (l === "") { return -1; }
+            return l.match(/^ +/)[0].length
+          }).filter(function (l) {
+            return l !== -1;
+          }).reduce(function (prev, curr) {
+            if (prev < curr) { return prev; }
+            return curr;
+          });
+      },
+      trimChar: function(text, ind) {
+        return text.split('\n').map(function (l) {
+          return l.substr(ind);
+        }).join('\n');
       }
     });
   </script>
